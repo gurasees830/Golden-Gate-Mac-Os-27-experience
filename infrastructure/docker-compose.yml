@@ -1,0 +1,46 @@
+# Golden Gate — full stack: static frontend (nginx) + Spring Boot API + PostgreSQL.
+#   cp infrastructure/.env.example infrastructure/.env   # then edit the password
+#   docker compose -f infrastructure/docker-compose.yml --env-file infrastructure/.env up --build
+# Open http://localhost:8081
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: goldengate
+      POSTGRES_USER: goldengate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goldengate -d goldengate"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ../backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/goldengate
+      DATABASE_USER: goldengate
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      ALLOWED_ORIGINS: ${PUBLIC_URL:-http://localhost:8081}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        VITE_API_URL: same-origin
+        VITE_YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+
+volumes:
+  db-data:
