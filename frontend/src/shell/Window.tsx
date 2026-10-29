@@ -3,7 +3,7 @@ import { usePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import type { WindowState } from '../types';
 import { getApp } from '../lib/appRegistry';
-import { MENUBAR_H, useWindows, workArea } from '../stores/windows';
+import { MENUBAR_H, hasCloseGuard, useWindows, workArea } from '../stores/windows';
 import { useSettings } from '../stores/settings';
 import { useSystem } from '../stores/system';
 import { WindowContext, TitleBar, type WindowCtx } from './windowContext';
@@ -63,14 +63,39 @@ function WindowImpl({ win, focused }: { win: WindowState; focused: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // close: shrink and fade, then let AnimatePresence remove the window
-  useEffect(() => {
-    if (isPresent) return;
+  // close: shrink and fade, then let AnimatePresence remove the window.
+  // The traffic-light button starts this tween in the click itself, before React re-renders, so the
+  // window reacts on the very next frame; keyboard/menu closes start it before the next paint.
+  const exit = useRef<{ started: boolean; done: boolean; remove?: () => void }>({ started: false, done: false });
+  const startExit = (then?: () => void) => {
     const el = ref.current;
-    if (!el || reduceMotion) return safeToRemove?.();
+    if (!el || exit.current.started) return;
+    exit.current.started = true;
     tween.current?.kill();
-    setAnimating(true);
-    gsap.to(el, { opacity: 0, scale: 0.94, y: 8, duration: 0.16, ease: ease.in, force3D: true, onComplete: () => safeToRemove?.() });
+    el.classList.add('animating'); // direct: the element's props are frozen once it leaves the tree
+    el.style.pointerEvents = 'none';
+    gsap.to(el, {
+      opacity: 0,
+      scale: 0.9,
+      duration: 0.2,
+      ease: 'power2.out',
+      force3D: true,
+      onComplete: () => {
+        exit.current.done = true;
+        exit.current.remove?.();
+        then?.();
+      },
+    });
+  };
+  useLayoutEffect(() => {
+    if (isPresent) return;
+    exit.current.remove = safeToRemove;
+    // AnimatePresence ignores a removal signalled in the same commit as the exit, so wait a frame
+    if (reduceMotion || exit.current.done) {
+      requestAnimationFrame(() => safeToRemove?.());
+      return;
+    }
+    startExit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPresent]);
 
@@ -268,17 +293,24 @@ function WindowImpl({ win, focused }: { win: WindowState; focused: boolean }) {
       win,
       focused,
       startDrag,
-      close: () => void close(win.id),
+      close: () => {
+        // Fade first, then update the store: the Dock, menu bar and the window behind re-render
+        // once the window is already invisible instead of in the middle of the animation.
+        if (!reduceMotion && !hasCloseGuard(win.id)) startExit(() => void close(win.id));
+        else void close(win.id);
+      },
       minimize: () => minimize(win.id),
       zoom: () => {
         if (win.fullscreen) toggleFullscreen(win.id);
         else toggleMaximize(win.id);
       },
     }),
-    [win, focused, startDrag, close, minimize, toggleMaximize, toggleFullscreen],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [win, focused, startDrag, close, minimize, toggleMaximize, toggleFullscreen, reduceMotion],
   );
 
   const Comp = def.component;
+  const content = useMemo(() => <Comp win={win} />, [Comp, win]);
   const resizable = def.window.resizable !== false && !win.fullscreen;
   const b = win.bounds;
   const edges: [Edge, React.CSSProperties][] = [
@@ -321,11 +353,11 @@ function WindowImpl({ win, focused }: { win: WindowState; focused: boolean }) {
               <>
                 <TitleBar className="chrome hairline-b" height={38} />
                 <div className="flex-1 min-h-0 flex flex-col">
-                  <Comp win={win} />
+                  {content}
                 </div>
               </>
             ) : (
-              <Comp win={win} />
+              content
             )}
           </Suspense>
         </ErrorBoundary>

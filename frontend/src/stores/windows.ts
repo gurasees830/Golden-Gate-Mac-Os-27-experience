@@ -21,6 +21,7 @@ export function workArea(): Bounds {
 
 type CloseGuard = () => Promise<boolean>;
 const closeGuards = new Map<string, CloseGuard>();
+export const hasCloseGuard = (winId: string) => closeGuards.has(winId);
 export function setCloseGuard(winId: string, guard: CloseGuard | null) {
   if (guard) closeGuards.set(winId, guard);
   else closeGuards.delete(winId);

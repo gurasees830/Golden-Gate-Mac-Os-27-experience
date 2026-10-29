@@ -539,7 +539,7 @@ export default function CodeStudio({ win }: AppProps) {
     ? { bg: '#1f1f1f', side: '#181818', bar: '#181818', tab: '#181818', tabOn: '#1f1f1f', border: '#2b2b2b', text: '#cccccc', dim: '#9d9d9d', hover: '#2a2d2e', sel: '#04395e', status: '#0078d4' }
     : { bg: '#ffffff', side: '#f8f8f8', bar: '#f8f8f8', tab: '#ececec', tabOn: '#ffffff', border: '#e5e5e5', text: '#3b3b3b', dim: '#6e6e6e', hover: '#e8e8e8', sel: '#cce4f7', status: '#0078d4' };
 
-  const Tree = ({ id, depth }: { id: string; depth: number }) => {
+  const tree = (id: string, depth: number): React.ReactNode => {
     const kids = Object.values(nodes)
       .filter((n) => n.parentId === id && !n.trashed)
       .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === 'folder' ? -1 : 1));
@@ -562,7 +562,7 @@ export default function CodeStudio({ win }: AppProps) {
                 <span className="truncate">{n.name}</span>
                 {dirty.has(n.id) && <span className="ml-auto mr-2 w-2 h-2 rounded-full flex-none" style={{ background: c.dim }} />}
               </div>
-              {n.kind === 'folder' && isOpen && <Tree id={n.id} depth={depth + 1} />}
+              {n.kind === 'folder' && isOpen && tree(n.id, depth + 1)}
             </div>
           );
         })}
@@ -612,7 +612,7 @@ export default function CodeStudio({ win }: AppProps) {
                     </span>
                   </div>
                   <div className="flex-1 overflow-auto pb-4" onContextMenu={(e) => root && contextMenu(e, root)}>
-                    <Tree id={root.id} depth={0} />
+                    {tree(root.id, 0)}
                     {files.length === 0 && <div className="text-[12px] px-4 py-2" style={{ color: c.dim }}>This folder is empty. Right-click to add a file.</div>}
                   </div>
                 </>
