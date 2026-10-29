@@ -1,21 +1,36 @@
 import { lazy, type ComponentType } from 'react';
 import type { AppDefinition, AppProps } from '../types';
 import { WEB_APP_DEFS } from './webapps/catalog';
+import { useWindows } from '../stores/windows';
 
 type Loader = () => Promise<{ default: ComponentType<AppProps> }>;
-const loaders: Loader[] = [];
+const loaders = new Map<ComponentType<AppProps>, Loader>();
 const L = (f: Loader) => {
-  loaders.push(f);
-  return lazy(f);
+  const c = lazy(f);
+  loaders.set(c, f);
+  return c;
 };
 
-/** Download every app's code in the background, one at a time, so the first launch of an app is instant. */
+/**
+ * Download every app's code in the background, one at a time, then swap each lazy wrapper for the
+ * loaded component. A lazy component still suspends for a frame on its first render even when its
+ * code is cached, which made a window's contents pop in half-way through its opening animation.
+ */
 export function preloadApps() {
   const idle: (cb: () => void) => void = (cb) => ('requestIdleCallback' in window ? window.requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 300));
+  const queue = APPS.filter((d) => loaders.has(d.component));
   let i = 0;
   const next = () => {
-    if (i >= loaders.length) return;
-    loaders[i++]().catch(() => {}).finally(() => idle(next));
+    const def = queue[i++];
+    if (!def) return;
+    loaders
+      .get(def.component)!()
+      .then((m) => {
+        // only while no window of the app is open: a changed component type would remount it
+        if (!useWindows.getState().windows.some((w) => w.appId === def.id)) def.component = m.default;
+      })
+      .catch(() => {})
+      .finally(() => idle(next));
   };
   idle(next);
 }

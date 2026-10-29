@@ -199,7 +199,6 @@ export default function TerminalApp({ win }: AppProps) {
   return (
     <div className="flex flex-col h-full" style={{ background: '#1e1e1e' }}>
       <TitleBar height={30} className="!h-[30px] terminal-tb" style={{ background: '#2b2b2b', borderBottom: '1px solid #111' }} />
-      <style>{`.terminal-tb .titlebar-title{color:#cfcfcf;font-weight:500;font-size:12.5px} .window:not(.focused) .terminal-tb .titlebar-title{color:#777} .xterm-viewport::-webkit-scrollbar{width:8px} .xterm-viewport::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}`}</style>
       <div className="flex-1 min-h-0 px-[6px] pt-[4px] pb-[2px]" onPointerDown={() => termRef.current?.focus()}>
         <div ref={host} className="w-full h-full" />
       </div>

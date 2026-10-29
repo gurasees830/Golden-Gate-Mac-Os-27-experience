@@ -114,7 +114,6 @@ export default function PhotoBooth(_: AppProps) {
           {shots.map((s) => thumbs[s.id] && <img key={s.id} src={thumbs[s.id]} alt={s.name} className="h-full rounded-[4px] cursor-default" onDoubleClick={() => openFile(s.id)} />)}
         </div>
       )}
-      <style>{`.photobooth-tb .titlebar-title{color:#ddd}`}</style>
     </div>
   );
 }

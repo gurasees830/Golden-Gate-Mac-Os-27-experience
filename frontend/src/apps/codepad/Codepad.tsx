@@ -156,7 +156,6 @@ export default function Codepad({ win }: AppProps) {
       </div>
       {sheet === 'save' && <SaveSheet title="Save File" defaultName={node?.name ?? 'untitled.js'} defaultFolder={node?.parentId ?? DOCUMENTS} onCancel={() => setSheet(null)} onSave={async (f, n) => { const created = await useFs.getState().createFile(f, n, code, 'text/plain'); setFileId(created.id); setSaved(code); setSheet(null); }} />}
       {sheet === 'open' && <OpenSheet filter={(n) => isTextMime(n.mime)} onCancel={() => setSheet(null)} onOpen={(id) => { setSheet(null); setFileId(id); }} />}
-      <style>{`.tk-k{color:#ff7ab2}.tk-s{color:#ff8170}.tk-n{color:#d9c97c}.tk-c{color:#7f8c98;font-style:italic} .codepad-tb .titlebar-title{color:#ddd}`}</style>
     </div>
   );
 }

@@ -218,7 +218,6 @@ export function Launchpad() {
           <AppIcon id={drag.id} size={84} />
         </div>
       )}
-      <style>{`@keyframes gg-jiggle { from { transform: rotate(-2deg) } to { transform: rotate(2deg) } }`}</style>
     </div>
   );
 }

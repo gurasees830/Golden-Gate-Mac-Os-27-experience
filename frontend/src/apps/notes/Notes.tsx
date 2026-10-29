@@ -300,19 +300,6 @@ export default function Notes({ win }: AppProps) {
           <EmptyState title="No Note Selected" action={<button className="btn" onClick={newNote}>New Note</button>} />
         )}
       </div>
-      <style>{`
-        .notes-editor h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; }
-        .notes-editor h2 { font-size: 18px; font-weight: 700; margin: 10px 0 4px; }
-        .notes-editor h3 { font-size: 15px; font-weight: 700; }
-        .notes-editor ul, .notes-editor ol { padding-left: 24px; margin: 4px 0; }
-        .notes-editor ul { list-style: disc; } .notes-editor ol { list-style: decimal; }
-        .notes-editor ul.checklist { list-style: none; padding-left: 4px; }
-        .notes-editor ul.checklist > li { position: relative; padding-left: 26px; margin: 3px 0; }
-        .notes-editor ul.checklist > li::before { content: ''; position: absolute; left: -22px; top: 2px; width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--text-3); cursor: default; transform: translateX(22px); }
-        .notes-editor ul.checklist > li[data-checked="true"] { color: var(--text-2); }
-        .notes-editor ul.checklist > li[data-checked="true"]::before { background: #ffb800; box-shadow: none; }
-        .notes-editor ul.checklist > li[data-checked="true"]::after { content: ''; position: absolute; left: 5px; top: 6px; width: 6px; height: 3px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); }
-      `}</style>
     </div>
   );
 }

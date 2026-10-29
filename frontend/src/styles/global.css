@@ -36,8 +36,8 @@
   --glass-border: rgba(255, 255, 255, 0.55);
   --glass-edge: rgba(0, 0, 0, 0.12);
   --menu-bg: rgba(246, 246, 248, calc(0.6 + var(--tint) * 0.28));
-  --shadow-window: 0 0 0 0.5px rgba(0, 0, 0, 0.22), 0 28px 70px rgba(0, 0, 0, 0.28), 0 10px 24px rgba(0, 0, 0, 0.14);
-  --shadow-window-inactive: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 14px 40px rgba(0, 0, 0, 0.16);
+  --shadow-window: 0 0 0 0.5px rgba(0, 0, 0, 0.22), 0 22px 48px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.14);
+  --shadow-window-inactive: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 12px 30px rgba(0, 0, 0, 0.17);
   --shadow-menu: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 16px 40px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.08);
   --traffic-inactive: #d9d9dc;
   --selection: color-mix(in srgb, var(--accent) 24%, transparent);
@@ -249,10 +249,10 @@ img {
 .window.animating {
   will-change: transform, opacity;
 }
-.window.animating .chrome,
-.window.animating .sidebar {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+.window.animating,
+.window.animating * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 .window.win-hidden {
   opacity: 0 !important;
@@ -906,3 +906,35 @@ input[type="checkbox"].check:checked::after {
   border-radius: 8px;
   background-color: color-mix(in srgb, var(--accent) 18%, transparent) !important;
 }
+
+/* ------------------------------------------------------------------ per-app styles
+   Kept here rather than in <style> tags: inserting a stylesheet when an app opens makes the
+   browser restyle and repaint the whole page, which stalled the window's opening animation. */
+/* from Codepad.tsx */
+.tk-k{color:#ff7ab2}.tk-s{color:#ff8170}.tk-n{color:#d9c97c}.tk-c{color:#7f8c98;font-style:italic} .codepad-tb .titlebar-title{color:#ddd}
+/* from Notes.tsx */
+.notes-editor h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; }
+        .notes-editor h2 { font-size: 18px; font-weight: 700; margin: 10px 0 4px; }
+        .notes-editor h3 { font-size: 15px; font-weight: 700; }
+        .notes-editor ul, .notes-editor ol { padding-left: 24px; margin: 4px 0; }
+        .notes-editor ul { list-style: disc; } .notes-editor ol { list-style: decimal; }
+        .notes-editor ul.checklist { list-style: none; padding-left: 4px; }
+        .notes-editor ul.checklist > li { position: relative; padding-left: 26px; margin: 3px 0; }
+        .notes-editor ul.checklist > li::before { content: ''; position: absolute; left: -22px; top: 2px; width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--text-3); cursor: default; transform: translateX(22px); }
+        .notes-editor ul.checklist > li[data-checked="true"] { color: var(--text-2); }
+        .notes-editor ul.checklist > li[data-checked="true"]::before { background: #ffb800; box-shadow: none; }
+        .notes-editor ul.checklist > li[data-checked="true"]::after { content: ''; position: absolute; left: 5px; top: 6px; width: 6px; height: 3px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); }
+/* from PhotoBooth.tsx */
+.photobooth-tb .titlebar-title{color:#ddd}
+/* from Photos.tsx */
+@keyframes gg-kb { from { transform: scale(1) } to { transform: scale(1.06) } }
+/* from Safari.tsx */
+@keyframes gg-load { from { transform: scaleX(0) } to { transform: scaleX(.9) } }
+/* from Terminal.tsx */
+.terminal-tb .titlebar-title{color:#cfcfcf;font-weight:500;font-size:12.5px} .window:not(.focused) .terminal-tb .titlebar-title{color:#777} .xterm-viewport::-webkit-scrollbar{width:8px} .xterm-viewport::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}
+/* from Launchpad.tsx */
+@keyframes gg-jiggle { from { transform: rotate(-2deg) } to { transform: rotate(2deg) } }
+/* from Screens.tsx */
+@keyframes gg-shake {0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+/* from Screens.tsx */
+@keyframes gg-kenburns { from { transform: scale(1) translate(0,0) } to { transform: scale(1.12) translate(-2%, -1%) } }

@@ -272,7 +272,6 @@ function Slideshow({ list, onClose }: { list: FsNode[]; onClose: () => void }) {
       {n && urls[n.id] && <img key={n.id} src={urls[n.id]} alt={n.name} className="absolute inset-0 w-full h-full object-contain anim-fade" style={{ animation: 'gg-fade-in .9s, gg-kb 4.2s linear' }} />}
       <button className="absolute right-4 top-4 w-[34px] h-[34px] rounded-full border-0 grid place-items-center" style={{ background: 'rgba(255,255,255,.15)', color: '#fff' }} aria-label="Exit slideshow" onClick={onClose}><X size={16} /></button>
       <div className="absolute bottom-4 inset-x-0 text-center text-white/60 text-[12px]">{i + 1} / {list.length} · Esc to exit</div>
-      <style>{`@keyframes gg-kb { from { transform: scale(1) } to { transform: scale(1.06) } }`}</style>
     </div>
   );
 }

@@ -438,7 +438,6 @@ export default function Safari({ win }: AppProps) {
           )}
         </div>
       )}
-      <style>{`@keyframes gg-load { from { transform: scaleX(0) } to { transform: scaleX(.9) } }`}</style>
     </div>
   );
 }

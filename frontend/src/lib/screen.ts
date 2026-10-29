@@ -25,7 +25,9 @@ export function rectToDesk(r: DOMRect) {
 export const dockEls = new Map<string, HTMLElement>();
 
 export function dockTarget(key: string, fallbackKey?: string) {
-  const el = dockEls.get(key) ?? (fallbackKey ? dockEls.get(fallbackKey) : undefined);
+  // a tile that was just removed from the Dock is still in the map for a moment, but detached
+  const live = (k?: string) => { const e = k ? dockEls.get(k) : undefined; return e?.isConnected ? e : undefined; };
+  const el = live(key) ?? live(fallbackKey);
   if (!el) {
     const d = deskSize();
     return { x: d.w / 2, y: d.h - 30 };

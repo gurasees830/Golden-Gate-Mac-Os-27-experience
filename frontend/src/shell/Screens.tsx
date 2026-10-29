@@ -165,7 +165,6 @@ export function LoginScreen({ mode }: { mode: 'login' | 'locked' }) {
           ))}
         </div>
       )}
-      <style>{`@keyframes gg-shake {0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}`}</style>
     </div>
   );
 }
@@ -259,7 +258,6 @@ export function Screensaver() {
         <div className="text-[96px] font-bold leading-none tracking-tight">{now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, '')}</div>
         <div className="text-[20px] font-semibold opacity-90 mt-2">{now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}</div>
       </div>
-      <style>{`@keyframes gg-kenburns { from { transform: scale(1) translate(0,0) } to { transform: scale(1.12) translate(-2%, -1%) } }`}</style>
     </div>
   );
 }
